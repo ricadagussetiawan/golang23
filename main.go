@@ -26,12 +26,13 @@ import (
 )
 
 func main() {
-	dsn := "admin:2rU2BX2T@tcp(mysql-77792-0.cloudclusters.net:13119)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+        dsn := "admin:6JD0rs5A@tcp(mysql-78601-0.cloudclusters.net:17172)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
+        db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+        if err != nil {
+                log.Fatal(err.Error())
+        }
+
 
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
