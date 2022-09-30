@@ -23,17 +23,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	// "github.com/go-playground/validator/v10"
 )
 
 func main() {
-        dsn := "admin:6JD0rs5A@tcp(mysql-78601-0.cloudclusters.net:17172)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
-        db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := "admin:Qje5obRN@tcp(mysql-88986-0.cloudclusters.net:18215)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-        if err != nil {
-                log.Fatal(err.Error())
-        }
-
-
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	gin.SetMode(gin.ReleaseMode)
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
 	transactionRepository := transaction.NewRepository(db)
@@ -54,7 +54,17 @@ func main() {
 	sessionWebHandler := webHandler.NewSessionHandler(userService)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	// router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://github.com"
+		},
+	}))
 
 	cookieStore := cookie.NewStore([]byte(auth.SECRET_KEY))
 	router.Use(sessions.Sessions("bwastartup", cookieStore))
@@ -112,6 +122,7 @@ func main() {
 
 func authMiddleware(authService auth.Service, userService user.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		authHeader := c.GetHeader("Authorization")
 
 		if !strings.Contains(authHeader, "Bearer") {
